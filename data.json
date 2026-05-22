@@ -1,0 +1,163 @@
+{
+  "_info": {
+    "projeto": "EU-JAMRAI 2",
+    "grant": "101127787",
+    "programa": "EU4Health",
+    "duracao": "2024-2027",
+    "coordenador": "INSERM",
+    "ultima_atualizacao": "2025-05-22",
+    "periodo_reporte": "RP2",
+    "mes_referencia": 18
+  },
+
+  "consorcio": {
+    "orcamento_total": 49997196,
+    "executado_m18": 9290708,
+    "pct_execucao_m18": 18.6,
+    "pm_total_planeado": 8605.1
+  },
+
+  "portugal": {
+    "orcamento_total": 1253520,
+    "executado_m18": 96947,
+    "pct_execucao_m18": 7.73,
+    "remanescente": 1156572,
+    "pm_total_planeado": 623.45,
+    "alerta": "Execução 7.73% vs 18.6% média consórcio. Prioridade máxima: INFARMED e DGAV."
+  },
+
+  "entidades": [
+    {
+      "nome": "DGS",
+      "beneficiario": "24",
+      "orcamento": 731885,
+      "executado_m18": 65028,
+      "pct_execucao": 8.89,
+      "remanescente": 666857,
+      "pm_planeado": 385.0,
+      "wps": { "WP1": 24, "WP2": 48, "WP6": 84, "WP7": 96, "WP9": 17, "WP10": 116 },
+      "papel": "Líder / Coordenador",
+      "nota": "Maior beneficiário PT. Execução muito baixa (8.9%). Líder em 6 WPs."
+    },
+    {
+      "nome": "INSA",
+      "beneficiario": "24.1",
+      "orcamento": 161673,
+      "executado_m18": 10800,
+      "pct_execucao": 6.68,
+      "remanescente": 150873,
+      "pm_planeado": 11.6,
+      "wps": { "WP8": 11.6 },
+      "papel": "Vigilância humana",
+      "nota": "PM baixo (11.6). Risco de subparticipação em WP8."
+    },
+    {
+      "nome": "DGAV",
+      "beneficiario": "24.2",
+      "orcamento": 133441,
+      "executado_m18": 8390,
+      "pct_execucao": 6.29,
+      "remanescente": 125051,
+      "pm_planeado": 75.0,
+      "wps": { "WP5": 72, "WP8": 3 },
+      "papel": "Co-líder WP5",
+      "nota": "Co-líder WP5 ICM. 72 PM WP5 por executar. Crítico para governação One Health."
+    },
+    {
+      "nome": "INFARMED",
+      "beneficiario": "24.3",
+      "orcamento": 121716,
+      "executado_m18": 4122,
+      "pct_execucao": 3.39,
+      "remanescente": 117593,
+      "pm_planeado": 96.0,
+      "wps": { "WP6": 96 },
+      "papel": "AMS / Acesso",
+      "nota": "CRÍTICO — menor execução PT (3.4%). 96 PM planeados em WP6. Aceleração urgente."
+    },
+    {
+      "nome": "INIAV",
+      "beneficiario": "24.4",
+      "orcamento": 104805,
+      "executado_m18": 8607,
+      "pct_execucao": 8.21,
+      "remanescente": 96198,
+      "pm_planeado": 55.85,
+      "wps": { "WP8": 55.85 },
+      "papel": "One Health / Ambiente",
+      "nota": "One Health / Ambiente. PM relevante para vigilância integrada WP8."
+    }
+  ],
+
+  "work_packages": [
+    { "wp": "WP1",  "nome": "Coordenação",                      "tipo": "Transversal", "pct_conc": 60, "pct_curso": 40, "pct_pend": 0,  "entidades_pt": ["DGS"],                    "pm_pt": 24,    "prioridade": "Manter",   "estado": "Ativo" },
+    { "wp": "WP2",  "nome": "Disseminação",                     "tipo": "Transversal", "pct_conc": 55, "pct_curso": 45, "pct_pend": 0,  "entidades_pt": ["DGS"],                    "pm_pt": 48,    "prioridade": "Manter",   "estado": "Ativo" },
+    { "wp": "WP3",  "nome": "Avaliação",                        "tipo": "Transversal", "pct_conc": 20, "pct_curso": 60, "pct_pend": 20, "entidades_pt": [],                         "pm_pt": 0,     "prioridade": "Manter",   "estado": "Em desenvolvimento" },
+    { "wp": "WP4",  "nome": "Sustentabilidade",                 "tipo": "Transversal", "pct_conc": 30, "pct_curso": 50, "pct_pend": 20, "entidades_pt": ["DGS"],                    "pm_pt": 0,     "prioridade": "Manter",   "estado": "Em desenvolvimento" },
+    { "wp": "WP5",  "nome": "Country Engagement / ICM / NAP",   "tipo": "Operacional", "pct_conc": 70, "pct_curso": 30, "pct_pend": 0,  "entidades_pt": ["DGAV"],                   "pm_pt": 72,    "prioridade": "Máxima",   "estado": "Ativo — focal PT" },
+    { "wp": "WP6",  "nome": "Antimicrobial Stewardship (AMS)",  "tipo": "Operacional", "pct_conc": 65, "pct_curso": 35, "pct_pend": 0,  "entidades_pt": ["DGS", "INFARMED"],        "pm_pt": 180,   "prioridade": "Máxima",   "estado": "Ativo" },
+    { "wp": "WP7",  "nome": "Infection Prevention & Control",   "tipo": "Operacional", "pct_conc": 60, "pct_curso": 40, "pct_pend": 0,  "entidades_pt": ["DGS"],                    "pm_pt": 96,    "prioridade": "Alta",     "estado": "Ativo" },
+    { "wp": "WP8",  "nome": "One Health Surveillance",          "tipo": "Operacional", "pct_conc": 40, "pct_curso": 50, "pct_pend": 10, "entidades_pt": ["INSA", "DGAV", "INIAV"], "pm_pt": 70.45, "prioridade": "Alta",     "estado": "Em consolidação" },
+    { "wp": "WP9",  "nome": "Acesso a antibióticos e diagnóstico","tipo": "Operacional","pct_conc": 35, "pct_curso": 45, "pct_pend": 20, "entidades_pt": ["DGS"],                    "pm_pt": 17,    "prioridade": "Média",    "estado": "Em desenvolvimento" },
+    { "wp": "WP10", "nome": "Awareness & Comunicação",          "tipo": "Operacional", "pct_conc": 50, "pct_curso": 50, "pct_pend": 0,  "entidades_pt": ["DGS"],                    "pm_pt": 116,   "prioridade": "Alta",     "estado": "Ativo" }
+  ],
+
+  "paises_consorcio": [
+    { "pais": "LT", "pct_exec": 2.78,  "orcamento": 863350  },
+    { "pais": "SK", "pct_exec": 4.71,  "orcamento": 246348  },
+    { "pais": "PT", "pct_exec": 7.73,  "orcamento": 1253520 },
+    { "pais": "LV", "pct_exec": 12.9,  "orcamento": 749982  },
+    { "pais": "DE", "pct_exec": 15.4,  "orcamento": 1178965 },
+    { "pais": "MT", "pct_exec": 14.7,  "orcamento": 578130  },
+    { "pais": "PL", "pct_exec": 14.0,  "orcamento": 1109554 },
+    { "pais": "EL", "pct_exec": 17.0,  "orcamento": 1910255 },
+    { "pais": "IT", "pct_exec": 17.7,  "orcamento": 1114327 },
+    { "pais": "LU", "pct_exec": 7.1,   "orcamento": 1847930 },
+    { "pais": "NL", "pct_exec": 20.0,  "orcamento": 2465507 },
+    { "pais": "UA", "pct_exec": 23.1,  "orcamento": 1044422 },
+    { "pais": "SE", "pct_exec": 19.8,  "orcamento": 3048327 },
+    { "pais": "RO", "pct_exec": 22.7,  "orcamento": 1325893 },
+    { "pais": "HU", "pct_exec": 21.9,  "orcamento": 949295  },
+    { "pais": "NO", "pct_exec": 22.4,  "orcamento": 1532139 },
+    { "pais": "SI", "pct_exec": 26.9,  "orcamento": 1008870 },
+    { "pais": "IE", "pct_exec": 27.5,  "orcamento": 761736  },
+    { "pais": "IS", "pct_exec": 27.1,  "orcamento": 1034411 },
+    { "pais": "ES", "pct_exec": 17.2,  "orcamento": 10956510}
+  ],
+
+  "riscos": [
+    { "risco": "Underconsumption PT (7.73%)",        "categoria": "Financeiro",  "probabilidade": 3, "impacto": 3, "mitigacao": "Plano de aceleração por entidade; reafectar PM; revisão actividades RP2", "estado": "Crítico" },
+    { "risco": "INFARMED — execução mínima (3.4%)",  "categoria": "Operacional", "probabilidade": 3, "impacto": 3, "mitigacao": "Reunião urgente INFARMED; identificar bloqueios; re-planning WP6",         "estado": "Crítico" },
+    { "risco": "Fragmentação governance PT (DGS/DGAV)","categoria": "Governação","probabilidade": 2, "impacto": 3, "mitigacao": "Modelo ICM híbrido; protocolo cooperação institucional formal",             "estado": "Alto" },
+    { "risco": "DGAV — 6.3% exec. (co-líder WP5)",  "categoria": "Operacional", "probabilidade": 3, "impacto": 2, "mitigacao": "Plano actividades WP5 para 72 PM restantes; milestones ICM",               "estado": "Alto" },
+    { "risco": "Fadiga do consórcio",                "categoria": "Governação",  "probabilidade": 3, "impacto": 2, "mitigacao": "Governance meetings focados; simplificação reportes administrativos",        "estado": "Alto" },
+    { "risco": "Sustentabilidade pós-M48",           "categoria": "Estratégico", "probabilidade": 2, "impacto": 3, "mitigacao": "WP4 exit strategy; integração estruturas PPCIRA nacionais",                 "estado": "Em análise" },
+    { "risco": "NCE não aprovada",                   "categoria": "Estratégico", "probabilidade": 2, "impacto": 2, "mitigacao": "Argumentário técnico robusto; consenso consórcio; dados M18 como evidência", "estado": "Em análise" },
+    { "risco": "Dados vigilância incompletos (WP8)", "categoria": "Técnico",     "probabilidade": 2, "impacto": 2, "mitigacao": "Protocolo qualidade dados INSA+DGAV+INIAV",                                "estado": "Em análise" },
+    { "risco": "Constrangimentos de pessoal PT",     "categoria": "Operacional", "probabilidade": 3, "impacto": 1, "mitigacao": "Documentação processos; partilha conhecimento; backup funcional",            "estado": "Ativo" }
+  ],
+
+  "stakeholders": [
+    { "entidade": "DGS",               "setor": "Saúde humana",       "wps": "WP1,2,6,7,9,10", "papel": "Líder / Coordenador",   "influencia": 90 },
+    { "entidade": "DGAV",              "setor": "Saúde animal",       "wps": "WP5, WP8",        "papel": "Co-líder WP5",          "influencia": 85 },
+    { "entidade": "INSA",              "setor": "Saúde humana",       "wps": "WP8",             "papel": "Vigilância humana",     "influencia": 80 },
+    { "entidade": "INFARMED",          "setor": "Saúde humana",       "wps": "WP6",             "papel": "AMS / Acesso",          "influencia": 85 },
+    { "entidade": "INIAV",             "setor": "Ambiente / Animal",  "wps": "WP8",             "papel": "One Health / Ambiente", "influencia": 75 },
+    { "entidade": "ACSS",              "setor": "Saúde humana",       "wps": "WP7",             "papel": "IPC hospitalar",        "influencia": 70 },
+    { "entidade": "Ordem dos Médicos", "setor": "Saúde humana",       "wps": "WP6",             "papel": "Consultor AMS",         "influencia": 60 },
+    { "entidade": "SNS Digital",       "setor": "TI / Saúde",         "wps": "WP6",             "papel": "Apoio tecnológico",     "influencia": 50 },
+    { "entidade": "APA",               "setor": "Ambiente",           "wps": "WP8",             "papel": "Ambiente / AMR",        "influencia": 55 }
+  ],
+
+  "policy_uptake": [
+    { "output": "AMR National Action Plan template",           "wp": "WP5", "recebido": true,  "adaptado_pt": true,  "implementado": true,  "evidencia": "Despacho DGS" },
+    { "output": "HAI surveillance protocol",                   "wp": "WP7", "recebido": true,  "adaptado_pt": true,  "implementado": true,  "evidencia": "Circular Normativa" },
+    { "output": "Antibiotic consumption indicators",           "wp": "WP6", "recebido": true,  "adaptado_pt": true,  "implementado": false, "evidencia": "" },
+    { "output": "One Health roadmap",                          "wp": "WP5", "recebido": true,  "adaptado_pt": false, "implementado": false, "evidencia": "" },
+    { "output": "IPC training curriculum",                     "wp": "WP7", "recebido": true,  "adaptado_pt": true,  "implementado": false, "evidencia": "" },
+    { "output": "Stewardship e-learning module",               "wp": "WP6", "recebido": true,  "adaptado_pt": false, "implementado": false, "evidencia": "" },
+    { "output": "AMR resistance surveillance protocol",        "wp": "WP8", "recebido": true,  "adaptado_pt": false, "implementado": false, "evidencia": "" },
+    { "output": "Access to antibiotics framework",             "wp": "WP9", "recebido": true,  "adaptado_pt": false, "implementado": false, "evidencia": "" },
+    { "output": "Awareness campaign materials",                "wp": "WP10","recebido": true,  "adaptado_pt": true,  "implementado": false, "evidencia": "" }
+  ]
+}

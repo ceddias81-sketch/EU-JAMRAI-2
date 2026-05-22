@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EU-JAMRAI 2 — Painel Estratégico Portugal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f7f5;--surface:#fff;--s2:#f1efe8;--bdr:rgba(0,0,0,.1);
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#888780;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-dk:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-dk:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-dk:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-dk:#791F1F;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-dk:#3C3489;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-dk:#085041;
+  --r:8px;--rl:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5}
+.hdr{background:var(--surface);border-bottom:1px solid var(--bdr);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.hdr h1{font-size:16px;font-weight:600;color:var(--tx)}
+.hdr p{font-size:11px;color:var(--tx2);margin-top:2px}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk)}
+.b-green{background:var(--green-bg);color:var(--green-dk)}
+.b-red{background:var(--red-bg);color:var(--red-dk)}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk)}
+.b-purple{background:var(--purple-bg);color:var(--purple-dk)}
+.b-teal{background:var(--teal-bg);color:var(--teal-dk)}
+.b-gray{background:var(--s2);color:var(--tx2)}
+.nav{background:var(--surface);border-bottom:1px solid var(--bdr);padding:0 26px;display:flex;overflow-x:auto}
+.nav button{font-size:13px;padding:11px 15px;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:inherit;transition:color .15s,border-color .15s}
+.nav button:hover{color:var(--tx)}
+.nav button.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+.main{padding:20px 26px}
+.section{display:none}.section.active{display:block}
+.row{display:grid;gap:14px;margin-bottom:14px}
+.r2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:14px}
+.metric{background:var(--s2);border-radius:var(--r);padding:13px 15px}
+.metric .lbl{font-size:10px;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.metric .val{font-size:22px;font-weight:600;color:var(--tx);line-height:1.1}
+.metric .sub{font-size:10px;color:var(--tx3);margin-top:3px}
+.metric.warn .val{color:var(--red-dk)}
+.metric.ok .val{color:var(--green-dk)}
+.metric.caution .val{color:var(--amber-dk)}
+.card{background:var(--surface);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px 18px;margin-bottom:14px}
+.card h3{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:13px}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{text-align:left;font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;padding:0 7px 7px 0;border-bottom:1px solid var(--bdr)}
+td{padding:8px 7px 8px 0;border-bottom:1px solid var(--bdr);color:var(--tx);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s2)}
+.pb{height:5px;background:var(--s2);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pf{height:100%;border-radius:3px}
+.alert{padding:10px 14px;font-size:12px;margin-bottom:14px;border-left:3px solid;border-radius:0}
+.a-red{background:var(--red-bg);color:var(--red-dk);border-color:#E24B4A}
+.a-amber{background:var(--amber-bg);color:var(--amber-dk);border-color:#EF9F27}
+.a-blue{background:var(--blue-bg);color:var(--blue-dk);border-color:#378ADD}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:9px;font-size:11px;color:var(--tx2)}
+.legend span{display:flex;align-items:center;gap:4px}
+.lsq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.tbl-wrap{overflow-x:auto}
+.src{font-size:10px;color:var(--tx3);margin-top:8px;font-style:italic}
+.entity-card{background:var(--s2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.entity-card.critical{border:1px solid #F09595}
+.footer{background:var(--surface);border-top:1px solid var(--bdr);padding:10px 26px;font-size:10px;color:var(--tx3);margin-top:28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;font-size:14px;color:var(--tx2)}
+#error-msg{display:none}
+</style>
+</head>
+<body>
+
+<div id="loading">A carregar dados...</div>
+<div id="error-msg" class="alert a-red" style="margin:20px 26px;border-radius:var(--r)"></div>
+
+<div id="app" style="display:none">
+
+<div class="hdr">
+  <div>
+    <h1>EU-JAMRAI 2 — Painel Estratégico · Portugal</h1>
+    <p id="hdr-sub">Grant 101127787 · EU4Health · 2024–2027</p>
+  </div>
+  <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+    <span id="badge-exec" class="badge b-red"></span>
+    <span id="badge-rp" class="badge b-amber"></span>
+    <span class="badge b-blue">One Health</span>
+    <span id="badge-update" class="badge b-gray"></span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="tab('overview',this)">Visão geral</button>
+  <button onclick="tab('financeiro',this)">Financeiro PT</button>
+  <button onclick="tab('consorcio',this)">PT vs. Consórcio</button>
+  <button onclick="tab('wps',this)">Work Packages</button>
+  <button onclick="tab('policy',this)">Policy Uptake</button>
+  <button onclick="tab('riscos',this)">Riscos</button>
+  <button onclick="tab('sth',this)">Stakeholders</button>
+</div>
+
+<div class="main">
+
+<!-- VISÃO GERAL -->
+<div id="overview" class="section active">
+  <div id="alerta-overview" class="alert a-red"></div>
+  <div id="metrics-overview" class="metrics"></div>
+  <div class="row r2">
+    <div class="card">
+      <h3>Execução por entidade PT @ M<span class="mes-ref"></span></h3>
+      <div id="entity-bars"></div>
+      <p class="src" id="src-overview"></p>
+    </div>
+    <div class="card">
+      <h3>Execução PT vs. consórcio</h3>
+      <div style="position:relative;height:220px"><canvas id="cComp" role="img" aria-label="Execução PT vs consórcio"></canvas></div>
+      <div style="margin-top:16px">
+        <h3>Orçamento PT por entidade</h3>
+        <div style="position:relative;height:180px"><canvas id="cDoughnut" role="img" aria-label="Orçamento por entidade"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>PM planeados por entidade e WP</h3>
+    <div class="tbl-wrap"><table id="tbl-pm"></table></div>
+  </div>
+</div>
+
+<!-- FINANCEIRO -->
+<div id="financeiro" class="section">
+  <div id="alerta-fin" class="alert a-amber"></div>
+  <div id="metrics-fin" class="metrics"></div>
+  <div class="card">
+    <h3>Detalhe por beneficiário</h3>
+    <div class="tbl-wrap"><table id="tbl-fin"></table></div>
+    <p class="src" id="src-fin"></p>
+  </div>
+  <div class="row r2">
+    <div class="card">
+      <h3>Execução por entidade</h3>
+      <div style="position:relative;height:220px"><canvas id="cEntExec" role="img" aria-label="Execução por entidade"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Projecção de execução até M48</h3>
+      <div style="position:relative;height:220px"><canvas id="cProj" role="img" aria-label="Projecção de execução"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONSÓRCIO -->
+<div id="consorcio" class="section">
+  <div id="alerta-cons" class="alert a-red"></div>
+  <div id="metrics-cons" class="metrics"></div>
+  <div class="card">
+    <h3>Execução M<span class="mes-ref"></span> por país — todos os países do consórcio</h3>
+    <div style="position:relative;height:340px"><canvas id="cCountries" role="img" aria-label="Execução por país"></canvas></div>
+    <p class="src">Fonte: Budget_consumption_at_Month_18.pdf</p>
+  </div>
+</div>
+
+<!-- WORK PACKAGES -->
+<div id="wps" class="section">
+  <div class="alert a-blue">ℹ WP1–4: transversais · WP5–10: operacionais. WP5 é o Work Package focal de Portugal (ICM One Health).</div>
+  <div class="card">
+    <h3>PM por WP — Portugal</h3>
+    <div style="position:relative;height:200px"><canvas id="cWPpm" role="img" aria-label="PM por WP Portugal"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Work Packages — mapa completo Portugal</h3>
+    <div class="tbl-wrap"><table id="tbl-wps"></table></div>
+  </div>
+</div>
+
+<!-- POLICY UPTAKE -->
+<div id="policy" class="section">
+  <div id="metrics-policy" class="metrics"></div>
+  <div class="card">
+    <h3>Funil de adoção — outputs UE → Portugal</h3>
+    <div style="position:relative;height:160px"><canvas id="cPolicy" role="img" aria-label="Funil policy uptake"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Detalhe por output UE</h3>
+    <div class="tbl-wrap"><table id="tbl-policy"></table></div>
+  </div>
+</div>
+
+<!-- RISCOS -->
+<div id="riscos" class="section">
+  <div id="metrics-riscos" class="metrics"></div>
+  <div class="card">
+    <h3>Registo de riscos</h3>
+    <div class="tbl-wrap"><table id="tbl-riscos"></table></div>
+  </div>
+</div>
+
+<!-- STAKEHOLDERS -->
+<div id="sth" class="section">
+  <div id="metrics-sth" class="metrics"></div>
+  <div class="card">
+    <h3>Mapeamento de stakeholders</h3>
+    <div class="tbl-wrap"><table id="tbl-sth"></table></div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<div class="footer">
+  <span>EU-JAMRAI 2 · Grant <span id="footer-grant"></span> · Dados: <span id="footer-src"></span></span>
+  <span>Última actualização: <span id="footer-date"></span></span>
+</div>
+
+</div><!-- #app -->
+
+<script>
+const tc='rgba(0,0,0,0.45)', gc='rgba(0,0,0,0.07)', base={responsive:true,maintainAspectRatio:false};
+const charts={};
+
+function tab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function fmt(n){return n>=1000000?(n/1000000).toFixed(2)+'M €':n>=1000?(n/1000).toFixed(0)+'k €':n+' €';}
+function fmtFull(n){return Number(n).toLocaleString('pt-PT')+' €';}
+function chk(v){return v?'<span style="color:var(--green-dk);font-weight:600">✓</span>':'<span style="color:var(--red-dk)">—</span>';}
+function badgePct(p){
+  if(p>=20) return `<span class="badge b-green">${p}%</span>`;
+  if(p>=10) return `<span class="badge b-amber">${p}%</span>`;
+  return `<span class="badge b-red">${p}%</span>`;
+}
+function bar(pct,color){return `<div class="pb" style="width:70px"><div class="pf" style="width:${Math.min(pct,100)}%;background:${color}"></div></div>`;}
+function metric(lbl,val,sub,cls){return `<div class="metric ${cls||''}"><div class="lbl">${lbl}</div><div class="val">${val}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`;}
+
+function buildDashboard(d){
+  const i=d._info, pt=d.portugal, cons=d.consorcio;
+
+  // Header
+  document.querySelector('#hdr-sub').textContent=`Grant ${i.grant} · ${i.programa} · ${i.duracao} · Coord. ${i.coordenador}`;
+  document.querySelector('#badge-exec').textContent=`⚠ Exec. PT: ${pt.pct_execucao_m18}%`;
+  document.querySelector('#badge-rp').textContent=`${i.periodo_reporte} — Em curso`;
+  document.querySelector('#badge-update').textContent=`Dados: M${i.mes_referencia}`;
+  document.querySelectorAll('.mes-ref').forEach(el=>el.textContent=i.mes_referencia);
+
+  // Footer
+  document.getElementById('footer-grant').textContent=i.grant;
+  document.getElementById('footer-src').textContent=`Budget_consumption_at_Month_18.pdf`;
+  document.getElementById('footer-date').textContent=i.ultima_atualizacao;
+
+  // ─── VISÃO GERAL ────────────────────────────────────────────────
+  document.getElementById('alerta-overview').innerHTML=
+    `⛔ <strong>Alerta crítico M${i.mes_referencia}:</strong> Portugal executou apenas <strong>${pt.pct_execucao_m18}%</strong> do orçamento — menos de metade da média do consórcio (${cons.pct_execucao_m18}%). INFARMED tem a execução mais baixa: ${Math.min(...d.entidades.map(e=>e.pct_execucao)).toFixed(2)}%. Aceleração imediata necessária.`;
+
+  const gap=(cons.pct_execucao_m18-pt.pct_execucao_m18).toFixed(1);
+  document.getElementById('metrics-overview').innerHTML=
+    metric('Execução PT @ M'+i.mes_referencia, pt.pct_execucao_m18+'%', `vs. ${cons.pct_execucao_m18}% média consórcio`, 'warn')+
+    metric('Orçamento total PT', fmt(pt.orcamento_total), '2.5% do consórcio')+
+    metric('Executado M'+i.mes_referencia, fmt(pt.executado_m18), '')+
+    metric('Remanescente', fmt(pt.remanescente), '92.3% por executar')+
+    metric('PM planeado', pt.pm_total_planeado+' PM', 'person-months')+
+    metric('Gap vs. consórcio', '−'+gap+'pp', 'abaixo da média', 'warn')+
+    metric('WPs PT', d.work_packages.filter(w=>w.entidades_pt.length>0).length, 'de 10 WPs')+
+    metric('Entidades PT', d.entidades.length, '');
+
+  // Entity bars
+  document.getElementById('entity-bars').innerHTML = d.entidades.map(e=>{
+    const crit=e.pct_execucao<5;
+    const color=e.pct_execucao>=10?'#3B6D11':e.pct_execucao>=6?'#EF9F27':'#E24B4A';
+    return `<div class="entity-card${crit?' critical':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:${crit?'var(--red-dk)':'var(--tx)'}">${e.nome}${crit?' ⚠':''}</div>
+          <div style="font-size:10px;color:var(--tx2)">Benef. ${e.beneficiario} · ${Object.keys(e.wps).join(', ')} · ${e.pm_planeado} PM planeados</div>
+        </div>
+        ${badgePct(e.pct_execucao)}
+      </div>
+      <div style="margin:8px 0 4px"><div style="height:7px;background:rgba(0,0,0,0.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:${e.pct_execucao}%;background:${color};border-radius:4px"></div></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx2)"><span>${fmtFull(e.executado_m18)} executados</span><span>${fmtFull(e.orcamento)} orçamento</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('src-overview').textContent=`Fonte: Budget_consumption_at_Month_18.pdf · Dados reais do reporte M${i.mes_referencia}`;
+
+  // PM table
+  const wpKeys=['WP1','WP2','WP5','WP6','WP7','WP8','WP9','WP10'];
+  let pmHtml=`<thead><tr><th style="width:12%">Entidade</th>${wpKeys.map(w=>`<th style="width:8%;text-align:center">${w}</th>`).join('')}<th style="width:10%;text-align:center">Total PM</th><th>Nota</th></tr></thead><tbody>`;
+  d.entidades.forEach(e=>{
+    pmHtml+=`<tr><td><strong>${e.nome}</strong></td>${wpKeys.map(w=>`<td style="text-align:center">${e.wps[w]||'—'}</td>`).join('')}<td style="text-align:center;font-weight:600">${e.pm_planeado}</td><td>${e.nota}</td></tr>`;
+  });
+  const totalPM=wpKeys.map(w=>d.entidades.reduce((s,e)=>s+(e.wps[w]||0),0));
+  pmHtml+=`<tr style="background:var(--blue-bg)"><td style="color:var(--blue-dk);font-weight:600">TOTAL PT</td>${totalPM.map(v=>`<td style="text-align:center;font-weight:600;color:var(--blue-dk)">${v||'—'}</td>`).join('')}<td style="text-align:center;font-weight:600;color:var(--blue-dk)">${pt.pm_total_planeado}</td><td style="color:var(--blue-dk)">7.2% PM total consórcio</td></tr>`;
+  pmHtml+=`</tbody>`;
+  document.getElementById('tbl-pm').innerHTML=pmHtml;
+
+  // Charts overview
+  if(charts.cComp) charts.cComp.destroy();
+  charts.cComp=new Chart(document.getElementById('cComp'),{type:'bar',
+    data:{labels:['Portugal','Média consórcio','IS (27.1%)','SI (26.9%)','IE (27.5%)'],
+      datasets:[{label:'% Exec. M'+i.mes_referencia,data:[pt.pct_execucao_m18,cons.pct_execucao_m18,27.1,26.9,27.5],
+        backgroundColor:['#E24B4A','#185FA5','#3B6D11','#3B6D11','#3B6D11'],borderRadius:4}]},
+    options:{...base,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{max:35,ticks:{color:tc,font:{size:11},callback:v=>v+'%'},grid:{color:gc}}}}
+  });
+  if(charts.cDoughnut) charts.cDoughnut.destroy();
+  charts.cDoughnut=new Chart(document.getElementById('cDoughnut'),{type:'doughnut',
+    data:{labels:d.entidades.map(e=>e.nome),datasets:[{data:d.entidades.map(e=>e.orcamento),
+      backgroundColor:['#185FA5','#0F6E56','#534AB7','#854F0B','#3B6D11']}]},
+    options:{...base,plugins:{legend:{position:'right',labels:{color:tc,font:{size:10},boxWidth:9}}}}
+  });
+
+  // ─── FINANCEIRO ────────────────────────────────────────────────
+  const mesRem=48-i.mes_referencia;
+  const ritmoNec=mesRem>0?Math.round(pt.remanescente/mesRem):0;
+  document.getElementById('alerta-fin').innerHTML=`⚠ M${i.mes_referencia}: Execução abaixo do esperado. Para esgotar o orçamento são necessários ~${fmtFull(ritmoNec)}/mês nos ${mesRem} meses restantes.`;
+  document.getElementById('metrics-fin').innerHTML=
+    metric('Orçamento PT total', fmt(pt.orcamento_total))+
+    metric('Executado M'+i.mes_referencia, fmt(pt.executado_m18), '', 'warn')+
+    metric('% Execução', pt.pct_execucao_m18+'%', '', 'warn')+
+    metric('Remanescente', fmt(pt.remanescente))+
+    metric('Ritmo mensal necessário', fmt(ritmoNec), `nos ${mesRem} meses restantes`);
+
+  let finHtml=`<thead><tr><th style="width:13%">Entidade</th><th style="width:7%">Benef.</th><th style="width:16%;text-align:right">Orçamento (€)</th><th style="width:16%;text-align:right">Exec. M${i.mes_referencia} (€)</th><th style="width:10%;text-align:center">%</th><th style="width:16%;text-align:right">Remanescente (€)</th><th style="width:10%;text-align:center">PM plan.</th><th>Avaliação</th></tr></thead><tbody>`;
+  d.entidades.forEach((e,idx)=>{
+    const bg=e.pct_execucao<5?'style="background:var(--red-bg)"':idx%2===0?'style="background:var(--s2)"':'';
+    finHtml+=`<tr ${bg}><td><strong${e.pct_execucao<5?' style="color:var(--red-dk)"':''}>${e.nome}${e.pct_execucao<5?' ⚠':''}</strong></td><td>${e.beneficiario}</td><td style="text-align:right">${Number(e.orcamento).toLocaleString('pt-PT')}</td><td style="text-align:right${e.pct_execucao<5?';color:var(--red-dk);font-weight:600':''}">${Number(e.executado_m18).toLocaleString('pt-PT')}</td><td style="text-align:center">${badgePct(e.pct_execucao)}</td><td style="text-align:right">${Number(e.remanescente).toLocaleString('pt-PT')}</td><td style="text-align:center">${e.pm_planeado}</td><td style="font-size:11px">${e.nota}</td></tr>`;
+  });
+  finHtml+=`<tr style="background:var(--blue-bg)"><td colspan="2" style="color:var(--blue-dk);font-weight:600">TOTAL PT</td><td style="text-align:right;color:var(--blue-dk);font-weight:600">${Number(pt.orcamento_total).toLocaleString('pt-PT')}</td><td style="text-align:right;color:var(--blue-dk);font-weight:600">${Number(pt.executado_m18).toLocaleString('pt-PT')}</td><td style="text-align:center">${badgePct(pt.pct_execucao_m18)}</td><td style="text-align:right;color:var(--blue-dk);font-weight:600">${Number(pt.remanescente).toLocaleString('pt-PT')}</td><td style="text-align:center;color:var(--blue-dk);font-weight:600">${pt.pm_total_planeado}</td><td style="color:var(--blue-dk);font-weight:600">Aceleração urgente</td></tr></tbody>`;
+  document.getElementById('tbl-fin').innerHTML=finHtml;
+  document.getElementById('src-fin').textContent=`Fonte: Budget_consumption_at_Month_18.pdf · Dados reais`;
+
+  if(charts.cEntExec) charts.cEntExec.destroy();
+  charts.cEntExec=new Chart(document.getElementById('cEntExec'),{type:'bar',
+    data:{labels:d.entidades.map(e=>e.nome),datasets:[
+      {label:'Executado',data:d.entidades.map(e=>e.executado_m18),backgroundColor:'#185FA5',borderRadius:3},
+      {label:'Remanescente',data:d.entidades.map(e=>e.remanescente),backgroundColor:'#B5D4F4',borderRadius:3}
+    ]},
+    options:{...base,plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8}}},scales:{x:{stacked:true,ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{stacked:true,ticks:{color:tc,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v},grid:{color:gc}}}}
+  });
+
+  const m=i.mes_referencia, rate=pt.executado_m18/m;
+  if(charts.cProj) charts.cProj.destroy();
+  charts.cProj=new Chart(document.getElementById('cProj'),{type:'line',
+    data:{labels:['M0',`M${m}`,'M30','M48'],
+      datasets:[
+        {label:'Ritmo actual',data:[0,pt.executado_m18,Math.round(rate*30),Math.round(rate*48)],borderColor:'#E24B4A',borderWidth:2,borderDash:[5,5],pointRadius:4,fill:false},
+        {label:'Ritmo necessário',data:[0,pt.executado_m18,Math.round(pt.orcamento_total*0.52),pt.orcamento_total],borderColor:'#3B6D11',borderWidth:2,pointRadius:4,fill:false},
+        {label:'Orçamento total',data:[pt.orcamento_total,pt.orcamento_total,pt.orcamento_total,pt.orcamento_total],borderColor:'#888780',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false}
+      ]},
+    options:{...base,plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8}}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'k €':v+'€'},grid:{color:gc}}}}
+  });
+
+  // ─── CONSÓRCIO ────────────────────────────────────────────────
+  const sortedPaises=[...d.paises_consorcio].sort((a,b)=>a.pct_exec-b.pct_exec);
+  const gap2=(cons.pct_execucao_m18-pt.pct_execucao_m18).toFixed(1);
+  document.getElementById('alerta-cons').innerHTML=`⛔ Portugal executa ${pt.pct_execucao_m18}% vs. média consórcio de ${cons.pct_execucao_m18}% a M${i.mes_referencia}. Gap de −${gap2}pp. Apenas LT (${d.paises_consorcio.find(p=>p.pais==='LT').pct_exec}%) e SK (${d.paises_consorcio.find(p=>p.pais==='SK').pct_exec}%) abaixo de Portugal.`;
+  document.getElementById('metrics-cons').innerHTML=
+    metric('Execução PT', pt.pct_execucao_m18+'%','','warn')+
+    metric('Média consórcio', cons.pct_execucao_m18+'%')+
+    metric('Gap PT', '−'+gap2+'pp','abaixo da média','warn')+
+    metric('Países abaixo de PT','2','LT e SK')+
+    metric('Melhor país', sortedPaises[sortedPaises.length-1].pais+': '+sortedPaises[sortedPaises.length-1].pct_exec+'%','','ok');
+
+  if(charts.cCountries) charts.cCountries.destroy();
+  charts.cCountries=new Chart(document.getElementById('cCountries'),{type:'bar',
+    data:{labels:sortedPaises.map(p=>p.pais),
+      datasets:[{label:'% Exec.',data:sortedPaises.map(p=>p.pct_exec),
+        backgroundColor:sortedPaises.map(p=>p.pais==='PT'?'#E24B4A':p.pct_exec>=20?'#3B6D11':'#B5D4F4'),borderRadius:3}]},
+    options:{...base,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11},callback:v=>v+'%'},grid:{color:gc}}}}
+  });
+
+  // ─── WPS ────────────────────────────────────────────────
+  const wpColors={'DGS':'#185FA5','DGAV':'#534AB7','INFARMED':'#854F0B','INIAV':'#3B6D11','INSA':'#0F6E56'};
+  const entNames=d.entidades.map(e=>e.nome);
+  const wpLabels=d.work_packages.map(w=>w.wp);
+  const datasets=entNames.map(nome=>({
+    label:nome,
+    data:d.work_packages.map(wp=>wp.entidades_pt.includes(nome)?wp.pm_pt/wp.entidades_pt.length:0),
+    backgroundColor:wpColors[nome]||'#888',borderRadius:2
+  }));
+  if(charts.cWPpm) charts.cWPpm.destroy();
+  charts.cWPpm=new Chart(document.getElementById('cWPpm'),{type:'bar',
+    data:{labels:wpLabels,datasets},
+    options:{...base,plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8}}},scales:{x:{stacked:true,ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{stacked:true,ticks:{color:tc,font:{size:11},callback:v=>v+' PM'},grid:{color:gc}}}}
+  });
+
+  let wpHtml=`<thead><tr><th style="width:7%">WP</th><th style="width:24%">Designação</th><th style="width:10%">Tipo</th><th style="width:18%">Entidades PT</th><th style="width:9%">PM PT</th><th style="width:11%">Prioridade</th><th>Estado</th></tr></thead><tbody>`;
+  d.work_packages.forEach((w,idx)=>{
+    const tipoBadge=w.tipo==='Transversal'?'b-purple':'b-teal';
+    const prioBadge=w.prioridade==='Máxima'?'b-red':w.prioridade==='Alta'?'b-amber':w.prioridade==='Média'?'b-blue':'b-gray';
+    const bg=idx%2===0?'style="background:var(--s2)"':'';
+    wpHtml+=`<tr ${bg}><td><strong>${w.wp}</strong></td><td>${w.nome}</td><td><span class="badge ${tipoBadge}">${w.tipo}</span></td><td>${w.entidades_pt.join(' · ')||'—'}</td><td style="text-align:center">${w.pm_pt||'—'}</td><td><span class="badge ${prioBadge}">${w.prioridade}</span></td><td>${w.estado}</td></tr>`;
+  });
+  document.getElementById('tbl-wps').innerHTML=wpHtml+'</tbody>';
+
+  // ─── POLICY UPTAKE ────────────────────────────────────────────────
+  const nReceb=d.policy_uptake.filter(p=>p.recebido).length;
+  const nAdapt=d.policy_uptake.filter(p=>p.adaptado_pt).length;
+  const nImpl=d.policy_uptake.filter(p=>p.implementado).length;
+  document.getElementById('metrics-policy').innerHTML=
+    metric('Outputs UE', d.policy_uptake.length)+
+    metric('Recebidos', nReceb, '', 'ok')+
+    metric('Adaptados PT', nAdapt, '', 'caution')+
+    metric('Implementados', nImpl, '', nImpl>0?'ok':'warn');
+
+  if(charts.cPolicy) charts.cPolicy.destroy();
+  charts.cPolicy=new Chart(document.getElementById('cPolicy'),{type:'bar',
+    data:{labels:['Recebidos','Adaptados PT','Implementados'],
+      datasets:[{data:[nReceb,nAdapt,nImpl],backgroundColor:['#378ADD','#0F6E56','#3B6D11'],borderRadius:4}]},
+    options:{...base,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:d.policy_uptake.length+1,ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:12}},grid:{color:'transparent'}}}}
+  });
+
+  let polHtml=`<thead><tr><th style="width:36%">Output UE</th><th style="width:8%;text-align:center">WP</th><th style="width:12%;text-align:center">Recebido</th><th style="width:14%;text-align:center">Adaptado PT</th><th style="width:14%;text-align:center">Implementado</th><th>Evidência</th></tr></thead><tbody>`;
+  d.policy_uptake.forEach((p,idx)=>{
+    const bg=idx%2===0?'style="background:var(--s2)"':'';
+    polHtml+=`<tr ${bg}><td>${p.output}</td><td style="text-align:center">${p.wp}</td><td style="text-align:center">${chk(p.recebido)}</td><td style="text-align:center">${chk(p.adaptado_pt)}</td><td style="text-align:center">${chk(p.implementado)}</td><td>${p.evidencia||'—'}</td></tr>`;
+  });
+  document.getElementById('tbl-policy').innerHTML=polHtml+'</tbody>';
+
+  // ─── RISCOS ────────────────────────────────────────────────
+  const nAlto=d.riscos.filter(r=>r.probabilidade*r.impacto>=6).length;
+  const nMedio=d.riscos.filter(r=>{const n=r.probabilidade*r.impacto;return n>=3&&n<6;}).length;
+  const nBaixo=d.riscos.filter(r=>r.probabilidade*r.impacto<3).length;
+  document.getElementById('metrics-riscos').innerHTML=
+    metric('Total riscos', d.riscos.length)+
+    metric('Alto (P×I ≥ 6)', nAlto, '', 'warn')+
+    metric('Médio (P×I 3–5)', nMedio, '', 'caution')+
+    metric('Baixo (P×I < 3)', nBaixo, '', 'ok');
+
+  let riskHtml=`<thead><tr><th style="width:24%">Risco</th><th style="width:12%">Categoria</th><th style="width:7%;text-align:center">Prob.</th><th style="width:7%;text-align:center">Imp.</th><th style="width:7%;text-align:center">P×I</th><th style="width:32%">Mitigação</th><th>Estado</th></tr></thead><tbody>`;
+  d.riscos.forEach((r,idx)=>{
+    const nivel=r.probabilidade*r.impacto;
+    const nivelColor=nivel>=6?'var(--red-dk)':nivel>=3?'var(--amber-dk)':'var(--green-dk)';
+    const estadoBadge=r.estado==='Crítico'?'b-red':r.estado==='Alto'?'b-amber':'b-blue';
+    const bg=nivel>=6?'style="background:var(--red-bg)"':idx%2===0?'style="background:var(--s2)"':'';
+    riskHtml+=`<tr ${bg}><td>${r.risco}</td><td>${r.categoria}</td><td style="text-align:center">${r.probabilidade}</td><td style="text-align:center">${r.impacto}</td><td style="text-align:center;font-weight:600;color:${nivelColor}">${nivel}</td><td style="font-size:11px">${r.mitigacao}</td><td><span class="badge ${estadoBadge}">${r.estado}</span></td></tr>`;
+  });
+  document.getElementById('tbl-riscos').innerHTML=riskHtml+'</tbody>';
+
+  // ─── STAKEHOLDERS ────────────────────────────────────────────────
+  const nAltoInfl=d.stakeholders.filter(s=>s.influencia>=80).length;
+  document.getElementById('metrics-sth').innerHTML=
+    metric('Entidades mapeadas', d.stakeholders.length)+
+    metric('Alta influência (≥80)', nAltoInfl, '', 'ok')+
+    metric('Setores', '3', 'humano · animal · ambiente');
+
+  let sthHtml=`<thead><tr><th style="width:16%">Entidade</th><th style="width:20%">Setor</th><th style="width:18%">WPs</th><th style="width:22%">Papel</th><th>Influência</th></tr></thead><tbody>`;
+  d.stakeholders.forEach((s,idx)=>{
+    const bg=idx%2===0?'style="background:var(--s2)"':'';
+    const pct=s.influencia;
+    const color=pct>=80?'#185FA5':pct>=60?'#3B6D11':'#888';
+    sthHtml+=`<tr ${bg}><td><strong>${s.entidade}</strong></td><td>${s.setor}</td><td>${s.wps}</td><td>${s.papel}</td><td><div class="pb" style="width:80px">${bar(pct,color)}</div> ${pct}</td></tr>`;
+  });
+  document.getElementById('tbl-sth').innerHTML=sthHtml+'</tbody>';
+}
+
+// ─── LOAD DATA ────────────────────────────────────────────────────────
+fetch('data.json')
+  .then(r=>{
+    if(!r.ok) throw new Error(`Erro ao carregar data.json: ${r.status} ${r.statusText}`);
+    return r.json();
+  })
+  .then(data=>{
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+    buildDashboard(data);
+  })
+  .catch(err=>{
+    document.getElementById('loading').style.display='none';
+    const el=document.getElementById('error-msg');
+    el.style.display='block';
+    el.innerHTML=`<strong>Erro ao carregar dados:</strong> ${err.message}<br><small>Verifica que o ficheiro <code>data.json</code> está na mesma pasta que o <code>index.html</code>.</small>`;
+  });
+</script>
+</body>
+</html>

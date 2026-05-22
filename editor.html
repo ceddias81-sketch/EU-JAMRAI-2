@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EU-JAMRAI 2 — Editor de dados</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f7f5;--surface:#fff;--s2:#f1efe8;--bdr:rgba(0,0,0,.1);--bdr2:rgba(0,0,0,.18);
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#888780;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-dk:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-dk:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-dk:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-dk:#791F1F;
+  --r:8px;--rl:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;min-height:100vh}
+
+.hdr{background:var(--surface);border-bottom:1px solid var(--bdr);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.hdr h1{font-size:16px;font-weight:600;color:var(--tx)}
+.hdr p{font-size:11px;color:var(--tx2);margin-top:2px}
+.hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.nav{background:var(--surface);border-bottom:1px solid var(--bdr);padding:0 26px;display:flex;overflow-x:auto}
+.nav button{font-size:13px;padding:11px 15px;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:inherit;transition:color .15s,border-color .15s}
+.nav button:hover{color:var(--tx)}
+.nav button.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+
+.main{padding:20px 26px}
+.pane{display:none}.pane.active{display:block}
+
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:7px 14px;border-radius:var(--r);border:1px solid var(--bdr2);background:transparent;color:var(--tx);cursor:pointer;font-family:inherit;transition:background .15s}
+.btn:hover{background:var(--s2)}
+.btn.primary{background:var(--blue);color:#E6F1FB;border-color:var(--blue)}
+.btn.primary:hover{background:var(--blue-dk)}
+.btn.success{background:var(--green);color:var(--green-bg);border-color:var(--green)}
+.btn.success:hover{background:var(--green-dk)}
+.btn.danger{color:var(--red-dk);border-color:#F09595}
+.btn.danger:hover{background:var(--red-bg)}
+.btn.sm{font-size:11px;padding:4px 9px}
+
+.card{background:var(--surface);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px 20px;margin-bottom:16px}
+.card-title{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.meta-row{display:flex;flex-direction:column;gap:4px}
+.meta-label{font-size:11px;color:var(--tx2);font-weight:500}
+.meta-input{font-size:13px;padding:7px 10px;border:1px solid var(--bdr2);border-radius:var(--r);background:var(--surface);color:var(--tx);font-family:inherit;width:100%}
+.meta-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+
+.tbl-wrap{overflow-x:auto;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;padding:0 8px 8px 0;border-bottom:1px solid var(--bdr);white-space:nowrap}
+td{padding:6px 8px 6px 0;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s2)}
+
+.cell-input{font-size:12px;padding:4px 7px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--tx);font-family:inherit;width:100%;min-width:60px}
+.cell-input:hover{border-color:var(--bdr2);background:var(--surface)}
+.cell-input:focus{border-color:var(--blue);background:var(--surface);outline:none;box-shadow:0 0 0 2px rgba(24,95,165,.1)}
+.cell-select{font-size:12px;padding:4px 7px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--tx);font-family:inherit;cursor:pointer}
+.cell-select:hover,.cell-select:focus{border-color:var(--bdr2);background:var(--surface);outline:none}
+.cell-chk{width:16px;height:16px;cursor:pointer;accent-color:var(--blue)}
+
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.b-red{background:var(--red-bg);color:var(--red-dk)}
+.b-amber{background:var(--amber-bg);color:var(--amber-dk)}
+.b-green{background:var(--green-bg);color:var(--green-dk)}
+.b-blue{background:var(--blue-bg);color:var(--blue-dk)}
+.b-gray{background:var(--s2);color:var(--tx2)}
+
+.status{display:flex;align-items:center;gap:8px;font-size:12px;padding:10px 14px;border-radius:var(--r);margin-bottom:14px}
+.status.info{background:var(--blue-bg);color:var(--blue-dk)}
+.status.ok{background:var(--green-bg);color:var(--green-dk)}
+.status.warn{background:var(--amber-bg);color:var(--amber-dk)}
+.status.error{background:var(--red-bg);color:var(--red-dk)}
+
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.divider{height:1px;background:var(--bdr);margin:16px 0}
+
+.json-preview{font-family:'Courier New',monospace;font-size:11px;background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;max-height:320px;overflow-y:auto;white-space:pre;line-height:1.6;color:var(--tx2)}
+
+.instructions{background:var(--blue-bg);border:1px solid rgba(24,95,165,.2);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--blue-dk);line-height:1.7}
+.instructions strong{font-weight:600}
+.instructions ol{padding-left:18px;margin-top:6px}
+.instructions li{margin-top:3px}
+
+.footer{background:var(--surface);border-top:1px solid var(--bdr);padding:10px 26px;font-size:11px;color:var(--tx3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:32px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>EU-JAMRAI 2 — Editor de dados</h1>
+    <p>Edita os dados e exporta o <code>data.json</code> para o dashboard</p>
+  </div>
+  <div class="hdr-actions">
+    <button class="btn" onclick="loadJSON()">&#8593; Carregar data.json</button>
+    <button class="btn primary" onclick="exportJSON()">&#8595; Exportar data.json</button>
+    <button class="btn success" onclick="window.open('index.html')">&#9654; Ver dashboard</button>
+    <input type="file" id="file-input" accept=".json" style="display:none" onchange="onFileLoad(event)">
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showTab('projecto',this)">Projecto</button>
+  <button onclick="showTab('entidades',this)">Entidades PT</button>
+  <button onclick="showTab('wps',this)">Work Packages</button>
+  <button onclick="showTab('paises',this)">Países</button>
+  <button onclick="showTab('riscos',this)">Riscos</button>
+  <button onclick="showTab('policy',this)">Policy Uptake</button>
+  <button onclick="showTab('sth',this)">Stakeholders</button>
+  <button onclick="showTab('preview',this)">JSON</button>
+</div>
+
+<div class="main">
+<div id="status-bar" class="status info">
+  <span>&#9432;</span>
+  <span id="status-msg">Pronto. Edita os valores e clica "Exportar data.json". Podes também carregar um ficheiro data.json existente.</span>
+</div>
+
+<!-- PROJECTO -->
+<div id="pane-projecto" class="pane active">
+  <div class="card">
+    <div class="card-title">Informação geral</div>
+    <div class="meta-grid">
+      <div class="meta-row"><span class="meta-label">Última actualização</span><input class="meta-input" id="m-date" type="date" value="2025-05-22"></div>
+      <div class="meta-row"><span class="meta-label">Período de reporte</span><input class="meta-input" id="m-rp" value="RP2"></div>
+      <div class="meta-row"><span class="meta-label">Mês de referência</span><input class="meta-input" id="m-mes" type="number" min="1" max="48" value="18"></div>
+      <div class="meta-row"><span class="meta-label">Grant Agreement</span><input class="meta-input" id="m-grant" value="101127787"></div>
+      <div class="meta-row"><span class="meta-label">Programa</span><input class="meta-input" id="m-prog" value="EU4Health"></div>
+      <div class="meta-row"><span class="meta-label">Duração</span><input class="meta-input" id="m-dur" value="2024-2027"></div>
+      <div class="meta-row"><span class="meta-label">Coordenador</span><input class="meta-input" id="m-coord" value="INSERM"></div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="meta-row"><span class="meta-label">Alerta estratégico PT</span><input class="meta-input" id="m-alerta" value="Execução 7.73% vs 18.6% média consórcio. Prioridade: INFARMED e DGAV."></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Consórcio geral — M<span class="mes-ref">18</span></div>
+    <div class="meta-grid">
+      <div class="meta-row"><span class="meta-label">Orçamento total (€)</span><input class="meta-input" id="c-orc" type="number" value="49997196"></div>
+      <div class="meta-row"><span class="meta-label">Executado M<span class="mes-ref">18</span> (€)</span><input class="meta-input" id="c-exec" type="number" value="9290708"></div>
+      <div class="meta-row"><span class="meta-label">% Execução M<span class="mes-ref">18</span></span><input class="meta-input" id="c-pct" type="number" step="0.01" value="18.6"></div>
+      <div class="meta-row"><span class="meta-label">PM total planeado</span><input class="meta-input" id="c-pm" type="number" step="0.1" value="8605.1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Portugal — totais M<span class="mes-ref">18</span></div>
+    <div class="meta-grid">
+      <div class="meta-row"><span class="meta-label">Orçamento total PT (€)</span><input class="meta-input" id="pt-orc" type="number" value="1253520"></div>
+      <div class="meta-row"><span class="meta-label">Executado M<span class="mes-ref">18</span> (€)</span><input class="meta-input" id="pt-exec" type="number" value="96947"></div>
+      <div class="meta-row"><span class="meta-label">% Execução M<span class="mes-ref">18</span></span><input class="meta-input" id="pt-pct" type="number" step="0.01" value="7.73"></div>
+      <div class="meta-row"><span class="meta-label">Remanescente (€)</span><input class="meta-input" id="pt-rem" type="number" value="1156572"></div>
+      <div class="meta-row"><span class="meta-label">PM total planeado PT</span><input class="meta-input" id="pt-pm" type="number" step="0.01" value="623.45"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENTIDADES -->
+<div id="pane-entidades" class="pane">
+  <div class="toolbar">
+    <button class="btn" onclick="addRow('entidades')">+ Adicionar entidade</button>
+    <span style="font-size:11px;color:var(--tx3)">Clica em qualquer célula para editar</span>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Nome</th><th>Benef.</th><th>Orçamento (€)</th><th>Exec. M<span class="mes-ref">18</span> (€)</th>
+        <th>% Exec.</th><th>Remanescente (€)</th><th>PM plan.</th>
+        <th>WP1</th><th>WP2</th><th>WP5</th><th>WP6</th><th>WP7</th><th>WP8</th><th>WP9</th><th>WP10</th>
+        <th>Papel</th><th>Nota estratégica</th><th></th>
+      </tr></thead>
+      <tbody id="tbody-entidades"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- WPS -->
+<div id="pane-wps" class="pane">
+  <div class="toolbar">
+    <span style="font-size:11px;color:var(--tx3)">A soma de % Conc. + % Curso + % Pend. deve ser 100% por linha</span>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>WP</th><th>Designação</th><th>Tipo</th>
+        <th>% Conc.</th><th>% Curso</th><th>% Pend.</th>
+        <th>PM PT</th><th>Prioridade</th><th>Estado</th>
+      </tr></thead>
+      <tbody id="tbody-wps"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- PAÍSES -->
+<div id="pane-paises" class="pane">
+  <div class="toolbar">
+    <button class="btn" onclick="addRow('paises')">+ Adicionar país</button>
+    <span style="font-size:11px;color:var(--tx3)">Portugal (PT) deve estar sempre na lista</span>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>País (código)</th><th>% Exec. M<span class="mes-ref">18</span></th><th>Orçamento (€)</th><th></th></tr></thead>
+      <tbody id="tbody-paises"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- RISCOS -->
+<div id="pane-riscos" class="pane">
+  <div class="toolbar">
+    <button class="btn" onclick="addRow('riscos')">+ Adicionar risco</button>
+    <span style="font-size:11px;color:var(--tx3)">Nível P×I calculado automaticamente (1-2 baixo · 3-5 médio · 6-9 alto)</span>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Risco</th><th>Categoria</th>
+        <th>Prob.<br><span style="font-weight:400">(1-3)</span></th>
+        <th>Imp.<br><span style="font-weight:400">(1-3)</span></th>
+        <th>P×I</th>
+        <th>Mitigação</th><th>Estado</th><th></th>
+      </tr></thead>
+      <tbody id="tbody-riscos"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- POLICY UPTAKE -->
+<div id="pane-policy" class="pane">
+  <div class="toolbar">
+    <button class="btn" onclick="addRow('policy')">+ Adicionar output</button>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Output UE</th><th>WP</th>
+        <th style="text-align:center">Recebido</th>
+        <th style="text-align:center">Adaptado PT</th>
+        <th style="text-align:center">Implementado</th>
+        <th>Evidência</th><th></th>
+      </tr></thead>
+      <tbody id="tbody-policy"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- STAKEHOLDERS -->
+<div id="pane-sth" class="pane">
+  <div class="toolbar">
+    <button class="btn" onclick="addRow('sth')">+ Adicionar stakeholder</button>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Entidade</th><th>Setor</th><th>WPs</th><th>Papel</th>
+        <th>Influência (0-100)</th><th></th>
+      </tr></thead>
+      <tbody id="tbody-sth"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- JSON PREVIEW -->
+<div id="pane-preview" class="pane">
+  <div class="toolbar">
+    <button class="btn primary" onclick="exportJSON()">&#8595; Exportar data.json</button>
+    <button class="btn" onclick="refreshPreview()">&#8635; Actualizar pré-visualização</button>
+  </div>
+  <div class="instructions">
+    <strong>Como usar o data.json no dashboard:</strong>
+    <ol>
+      <li>Clica "Exportar data.json" — o ficheiro descarrega automaticamente</li>
+      <li>No GitHub, vai ao teu repositório e clica no ficheiro <code>data.json</code></li>
+      <li>Clica no ícone do lápis (editar) → apaga o conteúdo → cola o novo JSON → "Commit changes"</li>
+      <li>O dashboard actualiza automaticamente em cerca de 1 minuto</li>
+    </ol>
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:8px">Pré-visualização do data.json</div>
+    <div id="json-preview" class="json-preview">Clica "Actualizar pré-visualização" para ver o JSON gerado.</div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<div class="footer">
+  <span>EU-JAMRAI 2 · Editor de dados · Grant 101127787</span>
+  <span>Coloca este ficheiro na mesma pasta que <code>index.html</code> e <code>data.json</code></span>
+</div>
+
+<script>
+const WP_KEYS=["WP1","WP2","WP5","WP6","WP7","WP8","WP9","WP10"];
+
+const DEFAULTS={
+  entidades:[
+    {nome:"DGS",beneficiario:"24",orcamento:731885,executado_m18:65028,pct_execucao:8.89,remanescente:666857,pm_planeado:385.0,wps:{WP1:24,WP2:48,WP6:84,WP7:96,WP9:17,WP10:116},papel:"Líder / Coordenador",nota:"Maior beneficiário PT. Execução muito baixa (8.9%). Líder em 6 WPs."},
+    {nome:"INSA",beneficiario:"24.1",orcamento:161673,executado_m18:10800,pct_execucao:6.68,remanescente:150873,pm_planeado:11.6,wps:{WP8:11.6},papel:"Vigilância humana",nota:"PM baixo (11.6). Risco de subparticipação em WP8."},
+    {nome:"DGAV",beneficiario:"24.2",orcamento:133441,executado_m18:8390,pct_execucao:6.29,remanescente:125051,pm_planeado:75.0,wps:{WP5:72,WP8:3},papel:"Co-líder WP5",nota:"Co-líder WP5 ICM. 72 PM WP5 por executar. Crítico para governação One Health."},
+    {nome:"INFARMED",beneficiario:"24.3",orcamento:121716,executado_m18:4122,pct_execucao:3.39,remanescente:117593,pm_planeado:96.0,wps:{WP6:96},papel:"AMS / Acesso",nota:"CRÍTICO — menor execução PT (3.4%). 96 PM planeados em WP6."},
+    {nome:"INIAV",beneficiario:"24.4",orcamento:104805,executado_m18:8607,pct_execucao:8.21,remanescente:96198,pm_planeado:55.85,wps:{WP8:55.85},papel:"One Health / Ambiente",nota:"One Health / Ambiente. PM relevante para vigilância integrada WP8."}
+  ],
+  wps:[
+    {wp:"WP1",nome:"Coordenação",tipo:"Transversal",pct_conc:60,pct_curso:40,pct_pend:0,pm_pt:24,prioridade:"Manter",estado:"Ativo"},
+    {wp:"WP2",nome:"Disseminação",tipo:"Transversal",pct_conc:55,pct_curso:45,pct_pend:0,pm_pt:48,prioridade:"Manter",estado:"Ativo"},
+    {wp:"WP3",nome:"Avaliação",tipo:"Transversal",pct_conc:20,pct_curso:60,pct_pend:20,pm_pt:0,prioridade:"Manter",estado:"Em desenvolvimento"},
+    {wp:"WP4",nome:"Sustentabilidade",tipo:"Transversal",pct_conc:30,pct_curso:50,pct_pend:20,pm_pt:0,prioridade:"Manter",estado:"Em desenvolvimento"},
+    {wp:"WP5",nome:"Country Engagement / ICM / NAP",tipo:"Operacional",pct_conc:70,pct_curso:30,pct_pend:0,pm_pt:72,prioridade:"Máxima",estado:"Ativo — focal PT"},
+    {wp:"WP6",nome:"Antimicrobial Stewardship (AMS)",tipo:"Operacional",pct_conc:65,pct_curso:35,pct_pend:0,pm_pt:180,prioridade:"Máxima",estado:"Ativo"},
+    {wp:"WP7",nome:"Infection Prevention & Control",tipo:"Operacional",pct_conc:60,pct_curso:40,pct_pend:0,pm_pt:96,prioridade:"Alta",estado:"Ativo"},
+    {wp:"WP8",nome:"One Health Surveillance",tipo:"Operacional",pct_conc:40,pct_curso:50,pct_pend:10,pm_pt:70.45,prioridade:"Alta",estado:"Em consolidação"},
+    {wp:"WP9",nome:"Acesso a antibióticos e diagnóstico",tipo:"Operacional",pct_conc:35,pct_curso:45,pct_pend:20,pm_pt:17,prioridade:"Média",estado:"Em desenvolvimento"},
+    {wp:"WP10",nome:"Awareness & Comunicação",tipo:"Operacional",pct_conc:50,pct_curso:50,pct_pend:0,pm_pt:116,prioridade:"Alta",estado:"Ativo"}
+  ],
+  paises:[
+    {pais:"LT",pct_exec:2.78,orcamento:863350},{pais:"SK",pct_exec:4.71,orcamento:246348},
+    {pais:"PT",pct_exec:7.73,orcamento:1253520},{pais:"LU",pct_exec:7.1,orcamento:1847930},
+    {pais:"LV",pct_exec:12.9,orcamento:749982},{pais:"MT",pct_exec:14.7,orcamento:578130},
+    {pais:"PL",pct_exec:14.0,orcamento:1109554},{pais:"DE",pct_exec:15.4,orcamento:1178965},
+    {pais:"EL",pct_exec:17.0,orcamento:1910255},{pais:"ES",pct_exec:17.2,orcamento:10956510},
+    {pais:"IT",pct_exec:17.7,orcamento:1114327},{pais:"SE",pct_exec:19.8,orcamento:3048327},
+    {pais:"NL",pct_exec:20.0,orcamento:2465507},{pais:"HU",pct_exec:21.9,orcamento:949295},
+    {pais:"NO",pct_exec:22.4,orcamento:1532139},{pais:"RO",pct_exec:22.7,orcamento:1325893},
+    {pais:"UA",pct_exec:23.1,orcamento:1044422},{pais:"SI",pct_exec:26.9,orcamento:1008870},
+    {pais:"IS",pct_exec:27.1,orcamento:1034411},{pais:"IE",pct_exec:27.5,orcamento:761736}
+  ],
+  riscos:[
+    {risco:"Underconsumption PT (7.73%)",categoria:"Financeiro",probabilidade:3,impacto:3,mitigacao:"Plano aceleração por entidade; reafectar PM; revisão actividades RP2",estado:"Crítico"},
+    {risco:"INFARMED — execução mínima (3.4%)",categoria:"Operacional",probabilidade:3,impacto:3,mitigacao:"Reunião urgente INFARMED; identificar bloqueios; re-planning WP6",estado:"Crítico"},
+    {risco:"Fragmentação governance PT (DGS/DGAV)",categoria:"Governação",probabilidade:2,impacto:3,mitigacao:"Modelo ICM híbrido; protocolo cooperação institucional formal",estado:"Alto"},
+    {risco:"DGAV — 6.3% exec. (co-líder WP5)",categoria:"Operacional",probabilidade:3,impacto:2,mitigacao:"Plano actividades WP5 para 72 PM restantes; milestones ICM",estado:"Alto"},
+    {risco:"Fadiga do consórcio",categoria:"Governação",probabilidade:3,impacto:2,mitigacao:"Governance meetings focados; simplificação reportes administrativos",estado:"Alto"},
+    {risco:"Sustentabilidade pós-M48",categoria:"Estratégico",probabilidade:2,impacto:3,mitigacao:"WP4 exit strategy; integração estruturas PPCIRA nacionais",estado:"Em análise"},
+    {risco:"NCE não aprovada",categoria:"Estratégico",probabilidade:2,impacto:2,mitigacao:"Argumentário técnico robusto; consenso consórcio; dados M18 como evidência",estado:"Em análise"},
+    {risco:"Dados vigilância incompletos (WP8)",categoria:"Técnico",probabilidade:2,impacto:2,mitigacao:"Protocolo qualidade dados INSA+DGAV+INIAV",estado:"Em análise"},
+    {risco:"Constrangimentos de pessoal PT",categoria:"Operacional",probabilidade:3,impacto:1,mitigacao:"Documentação processos; partilha conhecimento; backup funcional",estado:"Ativo"}
+  ],
+  policy:[
+    {output:"AMR National Action Plan template",wp:"WP5",recebido:true,adaptado_pt:true,implementado:true,evidencia:"Despacho DGS"},
+    {output:"HAI surveillance protocol",wp:"WP7",recebido:true,adaptado_pt:true,implementado:true,evidencia:"Circular Normativa"},
+    {output:"Antibiotic consumption indicators",wp:"WP6",recebido:true,adaptado_pt:true,implementado:false,evidencia:""},
+    {output:"One Health roadmap",wp:"WP5",recebido:true,adaptado_pt:false,implementado:false,evidencia:""},
+    {output:"IPC training curriculum",wp:"WP7",recebido:true,adaptado_pt:true,implementado:false,evidencia:""},
+    {output:"Stewardship e-learning module",wp:"WP6",recebido:true,adaptado_pt:false,implementado:false,evidencia:""},
+    {output:"AMR resistance surveillance protocol",wp:"WP8",recebido:true,adaptado_pt:false,implementado:false,evidencia:""},
+    {output:"Access to antibiotics framework",wp:"WP9",recebido:true,adaptado_pt:false,implementado:false,evidencia:""},
+    {output:"Awareness campaign materials",wp:"WP10",recebido:true,adaptado_pt:true,implementado:false,evidencia:""}
+  ],
+  sth:[
+    {entidade:"DGS",setor:"Saúde humana",wps:"WP1,2,6,7,9,10",papel:"Líder / Coordenador",influencia:90},
+    {entidade:"DGAV",setor:"Saúde animal",wps:"WP5, WP8",papel:"Co-líder WP5",influencia:85},
+    {entidade:"INSA",setor:"Saúde humana",wps:"WP8",papel:"Vigilância humana",influencia:80},
+    {entidade:"INFARMED",setor:"Saúde humana",wps:"WP6",papel:"AMS / Acesso",influencia:85},
+    {entidade:"INIAV",setor:"Ambiente / Animal",wps:"WP8",papel:"One Health / Ambiente",influencia:75},
+    {entidade:"ACSS",setor:"Saúde humana",wps:"WP7",papel:"IPC hospitalar",influencia:70},
+    {entidade:"Ordem dos Médicos",setor:"Saúde humana",wps:"WP6",papel:"Consultor AMS",influencia:60},
+    {entidade:"SNS Digital",setor:"TI / Saúde",wps:"WP6",papel:"Apoio tecnológico",influencia:50},
+    {entidade:"APA",setor:"Ambiente",wps:"WP8",papel:"Ambiente / AMR",influencia:55}
+  ]
+};
+
+const DATA = JSON.parse(JSON.stringify(DEFAULTS));
+
+function showTab(id, btn) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('status-bar');
+  el.className = 'status ' + (type||'info');
+  document.getElementById('status-msg').textContent = msg;
+}
+
+function ci(val, style) {
+  const s = style||'min-width:70px';
+  return `<input class="cell-input" type="text" value="${String(val||'').replace(/"/g,'&quot;')}" style="${s}">`;
+}
+function cn(val, step, style) {
+  return `<input class="cell-input" type="number" value="${val||0}" step="${step||1}" style="${style||'width:80px'}">`;
+}
+function cs(val, opts) {
+  return `<select class="cell-select">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select>`;
+}
+function cc(val) {
+  return `<input type="checkbox" class="cell-chk"${val?' checked':''}>`;
+}
+function delBtn(fn) {
+  return `<button class="btn sm danger" onclick="${fn}" title="Remover linha">&times;</button>`;
+}
+function nivelBadge(p, i) {
+  const n=p*i;
+  const cls=n>=6?'b-red':n>=3?'b-amber':'b-green';
+  return `<span class="badge ${cls}">${n}</span>`;
+}
+
+function renderEntidades() {
+  document.getElementById('tbody-entidades').innerHTML = DATA.entidades.map((e,i)=>
+    `<tr>
+      <td>${ci(e.nome,'min-width:60px')}</td>
+      <td>${ci(e.beneficiario,'width:48px')}</td>
+      <td>${cn(e.orcamento,1,'width:90px')}</td>
+      <td>${cn(e.executado_m18,1,'width:90px')}</td>
+      <td>${cn(e.pct_execucao,0.01,'width:60px')}</td>
+      <td>${cn(e.remanescente,1,'width:90px')}</td>
+      <td>${cn(e.pm_planeado,0.01,'width:65px')}</td>
+      ${WP_KEYS.map(w=>`<td>${cn(e.wps[w]||0,0.01,'width:52px')}</td>`).join('')}
+      <td>${ci(e.papel,'min-width:110px')}</td>
+      <td>${ci(e.nota,'min-width:180px')}</td>
+      <td>${delBtn(`delRow('entidades',${i})`)}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderWPs() {
+  const prioOpts=["Máxima","Alta","Média","Manter"];
+  const estadoOpts=["Ativo","Ativo — focal PT","Em desenvolvimento","Em consolidação","Concluído"];
+  document.getElementById('tbody-wps').innerHTML = DATA.wps.map((w,i)=>
+    `<tr>
+      <td><strong style="font-size:12px;color:var(--blue)">${w.wp}</strong></td>
+      <td>${ci(w.nome,'min-width:150px')}</td>
+      <td>${cs(w.tipo,['Transversal','Operacional'])}</td>
+      <td>${cn(w.pct_conc,1,'width:58px')}</td>
+      <td>${cn(w.pct_curso,1,'width:58px')}</td>
+      <td>${cn(w.pct_pend,1,'width:58px')}</td>
+      <td>${cn(w.pm_pt,0.01,'width:65px')}</td>
+      <td>${cs(w.prioridade,prioOpts)}</td>
+      <td>${cs(w.estado,estadoOpts)}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderPaises() {
+  document.getElementById('tbody-paises').innerHTML = DATA.paises.map((p,i)=>
+    `<tr>
+      <td>${ci(p.pais,'width:55px')}</td>
+      <td>${cn(p.pct_exec,0.01,'width:80px')}</td>
+      <td>${cn(p.orcamento,1,'width:110px')}</td>
+      <td>${delBtn(`delRow('paises',${i})`)}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderRiscos() {
+  const catOpts=["Financeiro","Operacional","Governação","Estratégico","Técnico"];
+  const estadoOpts=["Crítico","Alto","Em análise","Ativo","Mitigado"];
+  document.getElementById('tbody-riscos').innerHTML = DATA.riscos.map((r,i)=>
+    `<tr>
+      <td>${ci(r.risco,'min-width:160px')}</td>
+      <td>${cs(r.categoria,catOpts)}</td>
+      <td>${cn(r.probabilidade,1,'width:50px')}</td>
+      <td>${cn(r.impacto,1,'width:50px')}</td>
+      <td style="text-align:center">${nivelBadge(r.probabilidade,r.impacto)}</td>
+      <td>${ci(r.mitigacao,'min-width:180px')}</td>
+      <td>${cs(r.estado,estadoOpts)}</td>
+      <td>${delBtn(`delRow('riscos',${i})`)}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderPolicy() {
+  document.getElementById('tbody-policy').innerHTML = DATA.policy.map((p,i)=>
+    `<tr>
+      <td>${ci(p.output,'min-width:180px')}</td>
+      <td>${ci(p.wp,'width:55px')}</td>
+      <td style="text-align:center">${cc(p.recebido)}</td>
+      <td style="text-align:center">${cc(p.adaptado_pt)}</td>
+      <td style="text-align:center">${cc(p.implementado)}</td>
+      <td>${ci(p.evidencia,'min-width:120px')}</td>
+      <td>${delBtn(`delRow('policy',${i})`)}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderSth() {
+  document.getElementById('tbody-sth').innerHTML = DATA.sth.map((s,i)=>
+    `<tr>
+      <td>${ci(s.entidade,'min-width:100px')}</td>
+      <td>${ci(s.setor,'min-width:110px')}</td>
+      <td>${ci(s.wps,'min-width:100px')}</td>
+      <td>${ci(s.papel,'min-width:120px')}</td>
+      <td>${cn(s.influencia,1,'width:70px')}</td>
+      <td>${delBtn(`delRow('sth',${i})`)}</td>
+    </tr>`
+  ).join('');
+}
+
+function delRow(type, i) {
+  DATA[type].splice(i,1);
+  if(type==='entidades') renderEntidades();
+  else if(type==='paises') renderPaises();
+  else if(type==='riscos') renderRiscos();
+  else if(type==='policy') renderPolicy();
+  else if(type==='sth') renderSth();
+}
+
+function addRow(type) {
+  if(type==='entidades'){DATA.entidades.push({nome:"Nova entidade",beneficiario:"24.X",orcamento:0,executado_m18:0,pct_execucao:0,remanescente:0,pm_planeado:0,wps:{},papel:"",nota:""});renderEntidades();}
+  else if(type==='paises'){DATA.paises.push({pais:"XX",pct_exec:0,orcamento:0});renderPaises();}
+  else if(type==='riscos'){DATA.riscos.push({risco:"Novo risco",categoria:"Operacional",probabilidade:1,impacto:1,mitigacao:"",estado:"Em análise"});renderRiscos();}
+  else if(type==='policy'){DATA.policy.push({output:"Novo output",wp:"WP",recebido:false,adaptado_pt:false,implementado:false,evidencia:""});renderPolicy();}
+  else if(type==='sth'){DATA.sth.push({entidade:"Nova entidade",setor:"",wps:"",papel:"",influencia:50});renderSth();}
+}
+
+function readAll() {
+  const rows = id => [...document.getElementById(id).rows];
+
+  DATA.entidades = rows('tbody-entidades').map(r => {
+    const ins = [...r.querySelectorAll('input,select')];
+    const wps = {};
+    WP_KEYS.forEach((k,j) => { const v=parseFloat(ins[7+j].value)||0; if(v) wps[k]=v; });
+    return {nome:ins[0].value, beneficiario:ins[1].value, orcamento:parseFloat(ins[2].value)||0,
+      executado_m18:parseFloat(ins[3].value)||0, pct_execucao:parseFloat(ins[4].value)||0,
+      remanescente:parseFloat(ins[5].value)||0, pm_planeado:parseFloat(ins[6].value)||0,
+      wps, papel:ins[15].value, nota:ins[16].value};
+  });
+
+  DATA.wps = rows('tbody-wps').map((r,i) => {
+    const ins = [...r.querySelectorAll('input,select')];
+    return {...DATA.wps[i]||{}, nome:ins[0].value, tipo:ins[1].value,
+      pct_conc:parseInt(ins[2].value)||0, pct_curso:parseInt(ins[3].value)||0,
+      pct_pend:parseInt(ins[4].value)||0, pm_pt:parseFloat(ins[5].value)||0,
+      prioridade:ins[6].value, estado:ins[7].value};
+  });
+
+  DATA.paises = rows('tbody-paises').map(r => {
+    const ins = [...r.querySelectorAll('input')];
+    return {pais:ins[0].value, pct_exec:parseFloat(ins[1].value)||0, orcamento:parseFloat(ins[2].value)||0};
+  });
+
+  DATA.riscos = rows('tbody-riscos').map(r => {
+    const els = [...r.querySelectorAll('input,select')];
+    return {risco:els[0].value, categoria:els[1].value,
+      probabilidade:parseInt(els[2].value)||1, impacto:parseInt(els[3].value)||1,
+      mitigacao:els[4].value, estado:els[5].value};
+  });
+
+  DATA.policy = rows('tbody-policy').map(r => {
+    const txts = [...r.querySelectorAll('input[type=text]')];
+    const chks = [...r.querySelectorAll('input[type=checkbox]')];
+    return {output:txts[0].value, wp:txts[1].value,
+      recebido:chks[0].checked, adaptado_pt:chks[1].checked,
+      implementado:chks[2].checked, evidencia:txts[2]?.value||''};
+  });
+
+  DATA.sth = rows('tbody-sth').map(r => {
+    const ins = [...r.querySelectorAll('input')];
+    return {entidade:ins[0].value, setor:ins[1].value, wps:ins[2].value,
+      papel:ins[3].value, influencia:parseInt(ins[4].value)||0};
+  });
+}
+
+function buildJSON() {
+  readAll();
+  return {
+    _info:{
+      projeto:"EU-JAMRAI 2",
+      grant:document.getElementById('m-grant').value,
+      programa:document.getElementById('m-prog').value,
+      duracao:document.getElementById('m-dur').value,
+      coordenador:document.getElementById('m-coord').value,
+      ultima_atualizacao:document.getElementById('m-date').value,
+      periodo_reporte:document.getElementById('m-rp').value,
+      mes_referencia:parseInt(document.getElementById('m-mes').value)||18
+    },
+    consorcio:{
+      orcamento_total:parseFloat(document.getElementById('c-orc').value)||0,
+      executado_m18:parseFloat(document.getElementById('c-exec').value)||0,
+      pct_execucao_m18:parseFloat(document.getElementById('c-pct').value)||0,
+      pm_total_planeado:parseFloat(document.getElementById('c-pm').value)||0
+    },
+    portugal:{
+      orcamento_total:parseFloat(document.getElementById('pt-orc').value)||0,
+      executado_m18:parseFloat(document.getElementById('pt-exec').value)||0,
+      pct_execucao_m18:parseFloat(document.getElementById('pt-pct').value)||0,
+      remanescente:parseFloat(document.getElementById('pt-rem').value)||0,
+      pm_total_planeado:parseFloat(document.getElementById('pt-pm').value)||0,
+      alerta:document.getElementById('m-alerta').value
+    },
+    entidades:DATA.entidades,
+    work_packages:DATA.wps,
+    paises_consorcio:DATA.paises,
+    riscos:DATA.riscos,
+    policy_uptake:DATA.policy,
+    stakeholders:DATA.sth
+  };
+}
+
+function exportJSON() {
+  const j = buildJSON();
+  const blob = new Blob([JSON.stringify(j,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('data.json exportado com sucesso! Carrega-o no GitHub para actualizar o dashboard.', 'ok');
+}
+
+function refreshPreview() {
+  document.getElementById('json-preview').textContent = JSON.stringify(buildJSON(),null,2);
+  setStatus('JSON actualizado.', 'ok');
+}
+
+function loadJSON() {
+  document.getElementById('file-input').click();
+}
+
+function onFileLoad(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const j = JSON.parse(ev.target.result);
+      if(j._info) {
+        document.getElementById('m-date').value  = j._info.ultima_atualizacao||'';
+        document.getElementById('m-rp').value    = j._info.periodo_reporte||'';
+        document.getElementById('m-mes').value   = j._info.mes_referencia||18;
+        document.getElementById('m-grant').value = j._info.grant||'';
+        document.getElementById('m-prog').value  = j._info.programa||'';
+        document.getElementById('m-dur').value   = j._info.duracao||'';
+        document.getElementById('m-coord').value = j._info.coordenador||'';
+      }
+      if(j.consorcio) {
+        document.getElementById('c-orc').value  = j.consorcio.orcamento_total||0;
+        document.getElementById('c-exec').value = j.consorcio.executado_m18||0;
+        document.getElementById('c-pct').value  = j.consorcio.pct_execucao_m18||0;
+        document.getElementById('c-pm').value   = j.consorcio.pm_total_planeado||0;
+      }
+      if(j.portugal) {
+        document.getElementById('pt-orc').value  = j.portugal.orcamento_total||0;
+        document.getElementById('pt-exec').value = j.portugal.executado_m18||0;
+        document.getElementById('pt-pct').value  = j.portugal.pct_execucao_m18||0;
+        document.getElementById('pt-rem').value  = j.portugal.remanescente||0;
+        document.getElementById('pt-pm').value   = j.portugal.pm_total_planeado||0;
+        document.getElementById('m-alerta').value= j.portugal.alerta||'';
+      }
+      if(j.entidades)      { DATA.entidades=j.entidades;      renderEntidades(); }
+      if(j.work_packages)  { DATA.wps=j.work_packages;        renderWPs(); }
+      if(j.paises_consorcio){ DATA.paises=j.paises_consorcio; renderPaises(); }
+      if(j.riscos)         { DATA.riscos=j.riscos;            renderRiscos(); }
+      if(j.policy_uptake)  { DATA.policy=j.policy_uptake;     renderPolicy(); }
+      if(j.stakeholders)   { DATA.sth=j.stakeholders;         renderSth(); }
+      setStatus('data.json carregado com sucesso! Podes agora editar e re-exportar.', 'ok');
+    } catch(err) {
+      setStatus('Erro ao ler o ficheiro: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+document.getElementById('m-mes').addEventListener('input', function() {
+  document.querySelectorAll('.mes-ref').forEach(el=>el.textContent=this.value||18);
+});
+
+renderEntidades();
+renderWPs();
+renderPaises();
+renderRiscos();
+renderPolicy();
+renderSth();
+</script>
+</body>
+</html>
